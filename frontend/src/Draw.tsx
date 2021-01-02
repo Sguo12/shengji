@@ -17,6 +17,7 @@ interface IDrawProps {
 }
 interface IDrawState {
   autodraw: boolean;
+  pickUpKittyDelay: number;
 }
 class Draw extends React.Component<IDrawProps, IDrawState> {
   private could_draw: boolean = false;
@@ -27,6 +28,7 @@ class Draw extends React.Component<IDrawProps, IDrawState> {
     super(props);
     this.state = {
       autodraw: true,
+      pickUpKittyDelay: 5,
     };
     this.drawCard = this.drawCard.bind(this);
     this.pickUpKitty = this.pickUpKitty.bind(this);
@@ -83,7 +85,7 @@ class Draw extends React.Component<IDrawProps, IDrawState> {
   render(): JSX.Element {
     const canDraw =
       this.props.state.propagated.players[this.props.state.position].name ===
-        this.props.name && this.props.state.deck.length > 0;
+      this.props.name && this.props.state.deck.length > 0;
     if (
       canDraw &&
       !this.could_draw &&
@@ -115,6 +117,30 @@ class Draw extends React.Component<IDrawProps, IDrawState> {
     });
 
     const landlord = this.props.state.propagated.landlord;
+
+    const pickUpKittyDisabled = this.props.state.deck.length > 0 ||
+      (this.props.state.bids.length === 0 &&
+        this.props.state.autobid === null) ||
+      (landlord !== null && landlord !== playerId) ||
+      (landlord === null &&
+        ((this.props.state.propagated
+          .first_landlord_selection_policy === "ByWinningBid" &&
+          this.props.state.bids[this.props.state.bids.length - 1]
+            .id !== playerId) ||
+          (this.props.state.propagated
+            .first_landlord_selection_policy === "ByFirstBid" &&
+            this.props.state.bids[0].id !== playerId)))
+
+    if (!pickUpKittyDisabled &&
+      this.state.pickUpKittyDelay > 0) {
+      const newDelay = this.state.pickUpKittyDelay - 1
+      this.props.setTimeout(() => {
+        this.setState({
+          pickUpKittyDelay: newDelay
+        })
+      }, 1000);
+    }
+
     return (
       <div>
         <Header
@@ -185,22 +211,9 @@ class Draw extends React.Component<IDrawProps, IDrawState> {
             <>
               <button
                 onClick={this.pickUpKitty}
-                disabled={
-                  this.props.state.deck.length > 0 ||
-                  (this.props.state.bids.length === 0 &&
-                    this.props.state.autobid === null) ||
-                  (landlord !== null && landlord !== playerId) ||
-                  (landlord === null &&
-                    ((this.props.state.propagated
-                      .first_landlord_selection_policy === "ByWinningBid" &&
-                      this.props.state.bids[this.props.state.bids.length - 1]
-                        .id !== playerId) ||
-                      (this.props.state.propagated
-                        .first_landlord_selection_policy === "ByFirstBid" &&
-                        this.props.state.bids[0].id !== playerId)))
-                }
+                disabled={pickUpKittyDisabled || this.state.pickUpKittyDelay > 0}
               >
-                Pick up cards from the bottom
+                Pick up cards from the bottom {(!pickUpKittyDisabled && this.state.pickUpKittyDelay > 0) ? this.state.pickUpKittyDelay : ""}
               </button>
               <button
                 onClick={this.revealCard}
@@ -210,7 +223,7 @@ class Draw extends React.Component<IDrawProps, IDrawState> {
                   this.props.state.bids.length > 0 ||
                   this.props.state.autobid !== null ||
                   this.props.state.revealed_cards >=
-                    this.props.state.kitty.length
+                  this.props.state.kitty.length
                 }
               >
                 Reveal card from the bottom
