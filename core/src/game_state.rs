@@ -381,7 +381,7 @@ impl PlayPhase {
                 ThrowPenalty::None => (),
                 ThrowPenalty::TenPointsPerAttempt => {
                     if let Some(id) = self.trick.played_cards().first().map(|pc| pc.id) {
-                        *self.penalties.entry(id).or_insert(0) += 10;
+                        *self.penalties.entry(id).or_insert(0) += 10 * failed_throw_size;
                     }
                 }
             }
