@@ -28,7 +28,7 @@ class Draw extends React.Component<IDrawProps, IDrawState> {
     super(props);
     this.state = {
       autodraw: true,
-      pickUpKittyDelay: 5,
+      pickUpKittyDelay: 7,
     };
     this.drawCard = this.drawCard.bind(this);
     this.pickUpKitty = this.pickUpKitty.bind(this);
