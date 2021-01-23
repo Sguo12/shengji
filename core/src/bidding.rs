@@ -20,6 +20,7 @@ impl_slog_value!(BidPolicy);
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum JokerBidPolicy {
+    NotAllowed,
     BothTwoOrMore,
     BothNumDecks,
     LJNumDecksHJNumDecksLessOne,
@@ -27,7 +28,7 @@ pub enum JokerBidPolicy {
 
 impl Default for JokerBidPolicy {
     fn default() -> Self {
-        JokerBidPolicy::BothTwoOrMore
+        JokerBidPolicy::NotAllowed
     }
 }
 
@@ -106,6 +107,7 @@ impl Bid {
                 for inner_count in 1..=*count {
                     if card.is_joker() {
                         match (card, joker_bid_policy) {
+                            (_, JokerBidPolicy::NotAllowed) => continue,
                             (_, JokerBidPolicy::BothTwoOrMore) if inner_count <= 1 => continue,
                             (Card::SmallJoker, JokerBidPolicy::LJNumDecksHJNumDecksLessOne)
                             | (Card::SmallJoker, JokerBidPolicy::BothNumDecks)
@@ -436,7 +438,7 @@ mod tests {
                     0,
                     BidPolicy::JokerOrGreaterLength,
                     rpol,
-                    JokerBidPolicy::BothTwoOrMore,
+                    JokerBidPolicy::NotAllowed,
                     3,
                 )
                 .unwrap()

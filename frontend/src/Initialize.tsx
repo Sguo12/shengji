@@ -487,6 +487,9 @@ const UncommonSettings = (props: IUncommonSettings): JSX.Element => {
             value={props.state.propagated.joker_bid_policy}
             onChange={props.setJokerBidPolicy}
           >
+            <option value="NotAllowed">
+              Do not allow jokers bid
+            </option>
             <option value="BothTwoOrMore">
               At least two jokers (or number of decks) to bid no trump
             </option>
