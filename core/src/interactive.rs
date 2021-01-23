@@ -478,6 +478,7 @@ impl BroadcastMessage {
             BidReinforcementPolicySet { policy: BidReinforcementPolicy::ReinforceWhileWinning } => format!("{} allowed reinforcing the winning bid", n?),
             BidReinforcementPolicySet { policy: BidReinforcementPolicy::ReinforceWhileEquivalent } => format!("{} allowed reinforcing bids after they have been overturned", n?),
             BidReinforcementPolicySet { policy: BidReinforcementPolicy::OverturnOrReinforceWhileWinning } => format!("{} allowed overturning your own bids", n?),
+            JokerBidPolicySet { policy: JokerBidPolicy::NotAllowed} => format!("{} do not allow jokers to bid", n?),
             JokerBidPolicySet { policy: JokerBidPolicy::BothNumDecks } => format!("{} required no-trump bids to have every low or high joker", n?),
             JokerBidPolicySet { policy: JokerBidPolicy::LJNumDecksHJNumDecksLessOne } => format!("{} required low no-trump bids to have every low joker (one less required for high joker)", n?),
             JokerBidPolicySet { policy: JokerBidPolicy::BothTwoOrMore } => format!("{} required no-trump bids to have at least two low or high jokers", n?),

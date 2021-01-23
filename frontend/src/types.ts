@@ -147,6 +147,7 @@ export type BidReinforcementPolicy =
   | "ReinforceWhileEquivalent"
   | "OverturnOrReinforceWhileWinning";
 export type JokerBidPolicy =
+  | "NotAllowed"
   | "BothTwoOrMore"
   | "BothNumDecks"
   | "LJNumDecksHJNumDecksLessOne";
