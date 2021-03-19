@@ -99,7 +99,7 @@ pub enum ThrowPenalty {
 
 impl Default for ThrowPenalty {
     fn default() -> Self {
-        ThrowPenalty::None
+        ThrowPenalty::TenPointsPerAttempt
     }
 }
 
@@ -200,7 +200,7 @@ pub enum PlayTakebackPolicy {
 
 impl Default for PlayTakebackPolicy {
     fn default() -> Self {
-        PlayTakebackPolicy::AllowPlayTakeback
+        PlayTakebackPolicy::NoPlayTakeback
     }
 }
 

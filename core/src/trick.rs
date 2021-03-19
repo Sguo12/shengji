@@ -44,7 +44,7 @@ pub enum TrickDrawPolicy {
 
 impl Default for TrickDrawPolicy {
     fn default() -> Self {
-        TrickDrawPolicy::NoProtections
+        TrickDrawPolicy::LongerTuplesProtected
     }
 }
 

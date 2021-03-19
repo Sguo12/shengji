@@ -59,7 +59,7 @@ pub enum BidTakebackPolicy {
 
 impl Default for BidTakebackPolicy {
     fn default() -> Self {
-        BidTakebackPolicy::AllowBidTakeback
+        BidTakebackPolicy::NoBidTakeback
     }
 }
 
