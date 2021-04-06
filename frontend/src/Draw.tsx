@@ -94,7 +94,7 @@ class Draw extends React.Component<IDrawProps, IDrawState> {
     ) {
       this.timeout = this.props.setTimeout(() => {
         this.drawCard();
-      }, 250);
+      }, 600 / this.props.state.num_decks); // shorter the timeout when there are more people playing
     }
     this.could_draw = canDraw;
 
