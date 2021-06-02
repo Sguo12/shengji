@@ -22,6 +22,8 @@ pub enum GameMessage {
         messages: Vec<String>,
     },
     Kicked,
+    FirstStartAt(String), // sync with everyone about the time when the game was first started
+    Timeout, // informs everyone to take a break now! (sent by the person we tries to start the next game after the every two hours)
 }
 
 /// zstd dictionary, compressed with zstd.

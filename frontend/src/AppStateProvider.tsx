@@ -22,6 +22,8 @@ export interface AppState {
   messages: IMessage[];
   confetti: string | null;
   changeLogLastViewed: number;
+  firstStartAt: number; // unix epoch time
+  halfTimeBreakNow: boolean;
 }
 
 const appState: State<AppState> = combineState({
@@ -37,6 +39,8 @@ const appState: State<AppState> = combineState({
   errors: noPersistence(() => []),
   messages: noPersistence(() => []),
   confetti: noPersistence(() => null),
+  firstStartAt: noPersistence(() => 0),
+  halfTimeBreakNow: noPersistence(() => false),
 });
 
 interface Context {
@@ -46,7 +50,7 @@ interface Context {
 
 export const AppStateContext = React.createContext<Context>({
   state: appState.loadDefault(),
-  updateState: () => {},
+  updateState: () => { },
 });
 
 export const SettingsContext = React.createContext<Settings>(

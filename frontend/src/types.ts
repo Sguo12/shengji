@@ -1,4 +1,4 @@
-export type IGameMessage = "Beep" | "ReadyCheck" | IGameMessageUnion;
+export type IGameMessage = "Beep" | "ReadyCheck" | "Timeout" | IGameMessageUnion;
 export interface IGameMessageUnion {
   Broadcast?: IGameMessageBroadcast;
   Error?: string;
@@ -7,6 +7,7 @@ export interface IGameMessageUnion {
   Header?: {
     messages: string[];
   };
+  FirstStartAt?: string;
 }
 
 export interface IGameMessageMessage {
@@ -47,22 +48,22 @@ export type MessageVariant =
   | { type: "TookBackPlay" }
   | { type: "TrickWon"; winner: number; points: number }
   | {
-      type: "GameFinished";
-      result: {
-        [player_name: string]: {
-          won_game: boolean;
-          is_defending: boolean;
-          is_landlord: boolean;
-          ranks_up: number;
-          confetti: boolean;
-        };
+    type: "GameFinished";
+    result: {
+      [player_name: string]: {
+        won_game: boolean;
+        is_defending: boolean;
+        is_landlord: boolean;
+        ranks_up: number;
+        confetti: boolean;
       };
-    }
-  | {
-      type: "GameScoringParametersChanged";
-      parameters: IGameScoringParameters;
-      old_parameters: IGameScoringParameters;
     };
+  }
+  | {
+    type: "GameScoringParametersChanged";
+    parameters: IGameScoringParameters;
+    old_parameters: IGameScoringParameters;
+  };
 
 export interface IPlayer {
   id: number;
@@ -162,10 +163,10 @@ export interface IPropagatedState {
   hide_landlord_points: boolean | null;
   kitty_size: number | null;
   friend_selection_policy:
-    | "Unrestricted"
-    | "TrumpsIncluded"
-    | "HighestCardNotAllowed"
-    | "PointCardNotAllowed";
+  | "Unrestricted"
+  | "TrumpsIncluded"
+  | "HighestCardNotAllowed"
+  | "PointCardNotAllowed";
   multiple_join_policy: "Unrestricted" | "NoDoubleJoin";
   first_landlord_selection_policy: "ByWinningBid" | "ByFirstBid";
   bid_policy: BidPolicy;
@@ -288,13 +289,13 @@ export interface IOrderedCard {
 
 export type ITrump =
   | {
-      Standard: { suit: string; number: string };
-      NoTrump?: null;
-    }
+    Standard: { suit: string; number: string };
+    NoTrump?: null;
+  }
   | {
-      Standard?: null;
-      NoTrump: { number: string };
-    };
+    Standard?: null;
+    NoTrump: { number: string };
+  };
 
 export interface IDeck {
   exclude_small_joker: boolean;

@@ -11,6 +11,7 @@ import Credits from "./Credits";
 import Chat from "./Chat";
 import Play from "./Play";
 import DebugInfo from "./DebugInfo";
+import Notification from "./Notification";
 
 const Confetti = React.lazy(async () => await import("./Confetti"));
 
@@ -83,6 +84,7 @@ const Root = (): JSX.Element => {
           </div>
           <hr />
           <Credits />
+          <Notification />
         </div>
       );
     } else {
@@ -153,6 +155,7 @@ const Root = (): JSX.Element => {
           <Chat messages={state.messages} />
           <hr />
           <Credits />
+          <Notification />
         </div>
       );
     }
@@ -186,6 +189,7 @@ const Root = (): JSX.Element => {
         </div>
         <hr />
         <Credits />
+        <Notification />
       </div>
     );
   }

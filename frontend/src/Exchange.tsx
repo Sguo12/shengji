@@ -103,7 +103,7 @@ class Exchange extends React.Component<IExchangeProps, IExchangeState> {
     if (
       this.props.state.game_mode !== "Tractor" &&
       this.props.state.game_mode.FindingFriends.num_friends ===
-        this.state.friends.length
+      this.state.friends.length
     ) {
       (window as any).send({
         Action: {
@@ -146,8 +146,8 @@ class Exchange extends React.Component<IExchangeProps, IExchangeState> {
 
     const nextPlayer =
       kittyTheftEnabled &&
-      !this.props.state.finalized &&
-      this.props.state.exchanger !== null
+        !this.props.state.finalized &&
+        this.props.state.exchanger !== null
         ? this.props.state.exchanger
         : this.props.state.landlord;
 
@@ -199,9 +199,9 @@ class Exchange extends React.Component<IExchangeProps, IExchangeState> {
     );
     const bidUI =
       kittyTheftEnabled &&
-      this.props.state.finalized &&
-      this.props.state.autobid === null &&
-      (!isExchanger || lastBid.epoch + 1 !== this.props.state.epoch) ? (
+        this.props.state.finalized &&
+        this.props.state.autobid === null &&
+        (!isExchanger || lastBid.epoch + 1 !== this.props.state.epoch) ? (
         <>
           <BidArea
             bids={this.props.state.bids}

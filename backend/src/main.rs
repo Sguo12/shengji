@@ -149,6 +149,8 @@ pub enum UserMessage {
     Beep,
     ReadyCheck,
     Ready,
+    FirstStartAt(String),
+    Timeout,
 }
 
 #[tokio::main]
@@ -621,6 +623,27 @@ async fn handle_user_action(
                         message: "I'm ready!".to_owned(),
                     },
                 ));
+            }
+        }
+        UserMessage::FirstStartAt(unix_time) => {
+            for user in game.users.values() {
+                messages.push((
+                    user.clone(),
+                    GameMessage::FirstStartAt(unix_time.to_owned()),
+                ));
+            }
+        }
+        UserMessage::Timeout => {
+            for user in game.users.values() {
+                messages.push((
+                    user.clone(),
+                    GameMessage::Message {
+                        from: name.to_owned(),
+                        message: "hello every one break time".to_owned(),
+                    },
+                ));
+
+                messages.push((user.clone(), GameMessage::Timeout));
             }
         }
         UserMessage::Message(m) => {

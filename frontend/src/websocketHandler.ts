@@ -109,6 +109,36 @@ const readyCheckHandler = (
   return null;
 };
 
+const firstStartAtHandler: WebsocketHandler = (
+  state: AppState,
+  message: IGameMessageUnion
+) => {
+  if (message.FirstStartAt !== undefined) {
+    let newTime = parseInt(message.FirstStartAt);
+    console.error("got first start: ", message.FirstStartAt, newTime);
+    if (state.firstStartAt == 0) {
+      state.firstStartAt = newTime;
+    } else if (state.firstStartAt >= newTime) {
+      // check if the new time makes sense
+      state.firstStartAt = newTime;
+    } else {
+      console.error("bad firstStartAt time", state.firstStartAt, newTime);
+    }
+  }
+  return null;
+};
+
+const timeoutHandler = (
+  message: IGameMessage,
+  state: AppState
+): void => {
+  if (message === "Timeout") {
+    state.halfTimeBreakNow = true;
+    state.firstStartAt = 0;
+  }
+  return null;
+};
+
 const gameFinishedHandler: WebsocketHandler = (
   state: AppState,
   message: IGameMessageUnion
@@ -171,6 +201,7 @@ const allHandlers: WebsocketHandler[] = [
   stateHandler,
   headerMessageHandler,
   gameFinishedHandler,
+  firstStartAtHandler,
 ];
 
 const composedHandlers = (
@@ -179,7 +210,8 @@ const composedHandlers = (
   send: (msg: any) => void
 ): Partial<AppState> => {
   let partials = {};
-  if (message !== "Beep" && message !== "ReadyCheck") {
+  if (message !== "Beep" && message !== "ReadyCheck"
+    && message !== "Timeout") {
     allHandlers.forEach((h) => {
       const partial = h(state, message);
       partials = { ...partials, ...partial };
@@ -188,6 +220,8 @@ const composedHandlers = (
   }
   beepHandler(message);
   readyCheckHandler(message, send);
+  timeoutHandler(message, state);
+
   return partials;
 };
 

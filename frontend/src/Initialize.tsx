@@ -16,8 +16,10 @@ import { WebsocketContext } from "./WebsocketProvider";
 import Header from "./Header";
 import Players from "./Players";
 import { GameScoringSettings } from "./ScoringSettings";
+import { AppStateContext } from "./AppStateProvider";
 
 const Picker = React.lazy(async () => await import("emoji-picker-react"));
+const MilliSecondsInOneHour = 3600000;
 
 interface IDifficultyProps {
   state: IInitializePhase;
@@ -576,6 +578,8 @@ interface IProps {
 
 const Initialize = (props: IProps): JSX.Element => {
   const { send } = React.useContext(WebsocketContext);
+  const { state } = React.useContext(AppStateContext);
+
   const [showPicker, setShowPicker] = React.useState<boolean>(false);
   const setGameMode = (evt: React.ChangeEvent<HTMLSelectElement>): void => {
     evt.preventDefault();
@@ -625,11 +629,11 @@ const Initialize = (props: IProps): JSX.Element => {
   ): ((evt: React.ChangeEvent<HTMLSelectElement>) => void) => (
     evt: React.ChangeEvent<HTMLSelectElement>
   ): void => {
-    evt.preventDefault();
-    if (evt.target.value !== "") {
-      send({ Action: { [action]: evt.target.value } });
-    }
-  };
+      evt.preventDefault();
+      if (evt.target.value !== "") {
+        send({ Action: { [action]: evt.target.value } });
+      }
+    };
 
   const onSelectStringDefault = (
     action: string,
@@ -637,13 +641,13 @@ const Initialize = (props: IProps): JSX.Element => {
   ): ((evt: React.ChangeEvent<HTMLSelectElement>) => void) => (
     evt: React.ChangeEvent<HTMLSelectElement>
   ): void => {
-    evt.preventDefault();
-    if (evt.target.value !== "") {
-      send({ Action: { [action]: evt.target.value } });
-    } else {
-      send({ Action: { [action]: defaultValue } });
-    }
-  };
+      evt.preventDefault();
+      if (evt.target.value !== "") {
+        send({ Action: { [action]: evt.target.value } });
+      } else {
+        send({ Action: { [action]: defaultValue } });
+      }
+    };
 
   const setFriendSelectionPolicy = onSelectString("SetFriendSelectionPolicy");
   const setMultipleJoinPolicy = onSelectString("SetMultipleJoinPolicy");
@@ -710,8 +714,34 @@ const Initialize = (props: IProps): JSX.Element => {
 
   const startGame = (evt: React.SyntheticEvent): void => {
     evt.preventDefault();
-    send({ Action: "StartGame" });
+
+    // Do a timeout check whenever we start a new game
+    if (shouldTimeout()) {
+      send("Timeout");
+    } else {
+      // update all players with the original start time
+      send({ Action: "StartGame" });
+      send({ FirstStartAt: "" + state.firstStartAt });
+    }
   };
+
+  // return true if we need to do a timeout
+  const shouldTimeout = (): boolean => {
+    let firstStartAt = state.firstStartAt;
+    let current = Date.now();
+    if (firstStartAt == 0) {
+      state.firstStartAt = current;
+    } else if (current - firstStartAt > MilliSecondsInOneHour * 8) {
+      // if the saved value is greater than 8 hours, reset to zero.
+      // this is not likely to happen, just a safe guard
+      state.firstStartAt = current;
+      // } else if (current - firstStartAt > 1000 * 15) {
+    } else if (current - firstStartAt > MilliSecondsInOneHour * 2.5) {
+      return true;
+    }
+
+    return false;
+  }
 
   const setEmoji = (
     evt: React.MouseEvent,
@@ -734,13 +764,13 @@ const Initialize = (props: IProps): JSX.Element => {
       : "FindingFriends";
   const numFriends =
     props.state.propagated.game_mode === "Tractor" ||
-    props.state.propagated.game_mode.FindingFriends.num_friends === null
+      props.state.propagated.game_mode.FindingFriends.num_friends === null
       ? ""
       : props.state.propagated.game_mode.FindingFriends.num_friends;
   const decksEffective =
     props.state.propagated.num_decks !== undefined &&
-    props.state.propagated.num_decks !== null &&
-    props.state.propagated.num_decks > 0
+      props.state.propagated.num_decks !== null &&
+      props.state.propagated.num_decks > 0
       ? props.state.propagated.num_decks
       : Math.max(Math.floor(props.state.propagated.players.length / 2), 1);
   const decks = [...props.state.propagated.special_decks];
@@ -999,7 +1029,7 @@ const Initialize = (props: IProps): JSX.Element => {
             combined.bonus_level_policy !== undefined &&
             combined.game_scoring_parameters !== undefined &&
             combined.bonus_level_policy !==
-              combined.game_scoring_parameters.bonus_level_policy
+            combined.game_scoring_parameters.bonus_level_policy
           ) {
             combined.game_scoring_parameters.bonus_level_policy =
               combined.bonus_level_policy;
@@ -1060,7 +1090,7 @@ const Initialize = (props: IProps): JSX.Element => {
           <button
             disabled={
               props.state.propagated.game_start_policy ===
-                "AllowLandlordOnly" &&
+              "AllowLandlordOnly" &&
               landlordIndex !== -1 &&
               props.state.propagated.players[landlordIndex].name !== props.name
             }
@@ -1226,8 +1256,8 @@ const Initialize = (props: IProps): JSX.Element => {
           <label>
             Landlord label:{" "}
             {props.state.propagated.landlord_emoji !== null &&
-            props.state.propagated.landlord_emoji !== undefined &&
-            props.state.propagated.landlord_emoji !== ""
+              props.state.propagated.landlord_emoji !== undefined &&
+              props.state.propagated.landlord_emoji !== ""
               ? props.state.propagated.landlord_emoji
               : "当庄"}{" "}
             <button
